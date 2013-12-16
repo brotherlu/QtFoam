@@ -34,8 +34,9 @@
  * WaveFront OBJ file loader
  *  
  * @param[in]   path    File Location
- * @param[in]   vertices    Container for the vertices
- * @param[in]   faces   Container for the faces
+ * @param[in]   out_vertices    Container for the vertices
+ * @param[in]   out_uvs    Container for the uv coordinates
+ * @param[in]   out_normals   Container for the normals
  * @return      bool true if operation successfull or false if unsuccessful
  * */
 
@@ -119,14 +120,59 @@ bool loadObj(
  * STL ASCII Loader
  * 
  * @param[in]   path    Path to the file location
- * @param[in]   vertices    Container for the vertices
- * @param[in]   faces    Container for the faces
+ * @param[in]   out_vertices    Container for the vertices
+ * @param[in]   out_normals    Container for the normals
  * @return      bool true if the file is accessible false if the file does not exist
  * **/
 
-bool loadSTL(const char* path){
-    // Load ASCII STL files
-    return false;
+bool loadSTL(
+            const char* path,
+            std::vector<glm::vec3 >& out_vertices,
+            std::vector<glm::vec3 >& out_normals){
+    
+    /// Temporary file holders
+    std::vector<glm::vec3 > temp_verts;
+    std::vector<glm::vec3 > temp_normals;
+        
+    /// Load Wavefront OBJ files
+    FILE* file = fopen(path,"r");
+    
+    /// Check if the file is open
+    if(file!=NULL){
+        /// Cycle through the file 
+        while(1){
+            /// Create a data buffer
+            char line[128];
+            /// Scan the first line to see if it is readable
+            int res = fscanf(file,"%s",line);
+            /// Check if the file is open
+            if(res==EOF)
+                break;
+            /// Start comparing the value of the line
+            if(strcmp(line,"facet normal")==0){ /// Check for normal
+                glm::vec3 norm;
+                fscanf(file,"%f %f %f\n",&norm.x,&norm.y,&norm.z);
+                temp_normals.push_back(norm);
+            } else if(strcmp(line,"vertex")==0){    /// Check for vertex
+                glm::vec3 vert;
+                fscanf(file,"%f %f %f\n",&vert.x,&vert.y,&vert.z);
+                temp_verts.push_back(vert);
+            } else {
+                /// Clear if line does not match
+                char dump[1000];
+                fgets(dump,1000,file);
+            }
+        }
+    }
+    
+    for(unsigned int i=0;i<temp_verts.size();++i){
+        
+        out_vertices.push_back(temp_verts[i]);
+        out_normals.push_back(temp_normals[i/3]);
+        
+        }
+    
+    return 1;
     }
 
 /**
@@ -136,8 +182,13 @@ bool loadSTL(const char* path){
  * @return      Geometry
  * */
 
-bool loadBinSTL(const char* path){
-    // Load Binary STL files
+bool loadBinSTL(
+            const char* path,
+            std::vector<glm::vec3 >& out_vertices,
+            std::vector<glm::vec2 >& out_uvs,
+            std::vector<glm::vec3 >& out_normals){
+
+
     return false;
     }
 
