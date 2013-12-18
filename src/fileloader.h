@@ -81,31 +81,64 @@ bool loadObj(
                 fscanf(file,"%f %f\n",&uv.x,&uv.y);
                 temp_uvs.push_back(uv);
             } else if (strcmp(line,"f")==0){    /// if the line is a face
-                /// TODO: Face interpretr
-                if(fscanf()>0){
-                    
-                } else if(fscanf()>0){
+                /// Collect all the three columns of the face definitions
+                char buff1[256];
+                char buff2[256];
+                char buff3[256];
+                /// Populate the buffers
+                fscanf(file,"%s %s %s\n",&buff1,&buff2,&buff3);
+                /// Check for the data format
+                /// formats are [d d d] || [d/d d/d d/d] || [d//d d//d d//d] || [d/d/d d/d/d d/d/d]
+                unsigned int temp[3];
+                unsigned int form2 = sscanf(buff1,"%d/%d",&temp[0],&temp[1]);
+                unsigned int form3 = sscanf(buff1,"%d//%d",&temp[0],&temp[2]);
+                unsigned int form4 = sscanf(buff1,"%d/%d/%d",&temp[0],&temp[1],&temp[2]);
                 
-                } else if(fscanf()>0){
-                
-                } else if(fscanf()>0){
-                
-                } 
-                
-                
-                
-                
+                /// Create temporary data holders 
                 unsigned int vx[3],uv[3],n[3];
-                fscanf(file,"%d/%d/%d %d/%d/%d %d/%d/%d\n",&vx[0],&uv[0],&n[0],&vx[1],&uv[1],&n[1],&vx[2],&uv[2],&n[2]);
+                
+                ///  Form 4 condition
+                if(form4 == 3){
+                    vx[0] = temp[0];
+                    uv[0] = temp[1];
+                    n[0] = temp[2];
+                    sscanf(buff2,"%d/%d/%d",&vx[1],&uv[1],&n[1]);
+                    sscanf(buff3,"%d/%d/%d",&vx[2],&uv[2],&n[2]);
+                /// Form 3 Condition
+                } else if(form3 == 2) {
+                    vx[0] = temp[0];
+                    n[0] = temp[2];
+                    sscanf(buff2,"%d//%d",&vx[1],&n[1]);
+                    sscanf(buff3,"%d//%d",&vx[2],&n[2]);
+                /// Form 2 Condition
+                } else if(form2 == 2) {
+                    vx[0] = temp[0];
+                    uv[0] = temp[1];
+                    sscanf(buff2,"%d/%d",&vx[1],&uv[1]);
+                    sscanf(buff3,"%d/%d",&vx[2],&uv[2]);
+                /// Form 1 Condition
+                } else{
+                    sscanf(buff1,"%d",&vx[0]);
+                    sscanf(buff2,"%d",&vx[1]);
+                    sscanf(buff3,"%d",&vx[2]);
+                }
+
                 vertexIndices.push_back(vx[0]);
                 vertexIndices.push_back(vx[1]);
                 vertexIndices.push_back(vx[2]);
-                uvIndices.push_back(uv[0]);
-                uvIndices.push_back(uv[1]);
-                uvIndices.push_back(uv[2]);
-                normIndex.push_back(n[0]);
-                normIndex.push_back(n[1]);
-                normIndex.push_back(n[2]);
+                
+                if(form4==3 || form2 == 2){
+                    uvIndices.push_back(uv[0]);
+                    uvIndices.push_back(uv[1]);
+                    uvIndices.push_back(uv[2]);
+                }
+                
+                if(form4==3 || form3 == 2){
+                    normIndex.push_back(n[0]);
+                    normIndex.push_back(n[1]);
+                    normIndex.push_back(n[2]);
+                }
+    
             } else {
                 /// IF there is nothing recognized then skip it by dumping the muck
                 char dump[1000];
@@ -117,18 +150,17 @@ bool loadObj(
             /// Populate the referenced containers
             for(unsigned int i=0; i< vertexIndices.size();++i){
                 unsigned int vertexIndex = vertexIndices[i];
-                unsigned int uvIndex = uvIndices[i];
-                unsigned int normalIndex = normIndex[i];
-                
                 glm::vec3 vertex = temp_verts[vertexIndex-1]; 
-                glm::vec2 uv = temp_uvs[uvIndex-1]; 
-                glm::vec3 normal = temp_normals[normalIndex-1];
-                
                 out_vertices.push_back(vertex);
-                //out_uvs.push_back(uv);
-                out_normals.push_back(normal);
             }
             
+            /// Populate the out normals
+            for(unsigned int i=0; i< normIndex.size();++i){
+                unsigned int normalIndex = normIndex[i];
+                glm::vec3 normal = temp_normals[normalIndex-1];
+                out_normals.push_back(normal);
+            }
+
             return 1;
     } else { return 0; }
     }
