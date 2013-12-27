@@ -257,7 +257,7 @@ bool loadBinSTL(
             /// Loop through the triangles
             for(unsigned int i=0;i<triCount;++i){
                 float buffer[12];
-                fread(&buffer,sizeof(float)*4,1,file);
+                fread(&buffer,sizeof(float)*12,1,file);
                 /// Add normal
                 glm::vec3 norm;
                 norm.x = buffer[0];
