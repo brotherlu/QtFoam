@@ -178,17 +178,17 @@ bool loadSTL(
             const char* path,
             std::vector<glm::vec3 >& out_vertices,
             std::vector<glm::vec3 >& out_normals){
-    
+
     /// Temporary file holders
     std::vector<glm::vec3 > temp_verts;
     std::vector<glm::vec3 > temp_normals;
-    
+
     /// Load Wavefront OBJ files
     FILE* file = fopen(path,"r");
-    
+
     /// Check if the file is open
     if(file!=NULL){
-        /// Cycle through the file 
+        /// Cycle through the file
         while(1){
             /// Create a data buffer
             char line[256];
@@ -203,6 +203,8 @@ bool loadSTL(
                 glm::vec3 norm;
                 fscanf(file,"%f %f %f\n",&norm.x,&norm.y,&norm.z);
                 temp_normals.push_back(norm);
+                temp_normals.push_back(norm);
+                temp_normals.push_back(norm);
             } else if(strcmp(line,"vertex")==0){    /// Check for vertex
                 glm::vec3 vert;
                 fscanf(file,"%f %f %f\n",&vert.x,&vert.y,&vert.z);
@@ -214,20 +216,26 @@ bool loadSTL(
             }
         }
     }
-    
-    for(unsigned int i=0;i<temp_verts.size();++i){
-        
-        out_vertices.push_back(temp_verts[i]);
-        out_normals.push_back(temp_normals[i/3]);
-        
+
+    for(unsigned int i=0;i<temp_verts.size();i+=3){
+
+        glm::vec3 temp;
+
+        /// if normals are zero then we calculate our own
+        if(temp_normals[i].x == 0 && temp_normals[i].y==0 && temp_normals[i].z ==0){
+            temp_normals[i] = glm::normalize(glm::cross(temp_verts[i+2] - temp_verts[i],temp_verts[i+1] - temp_verts[i]));
         }
-    
+    }
+
+    out_vertices = temp_verts;
+    out_normals = temp_normals;
+
     return 1;
     }
 
 /**
  * STL Binary Loader
- * 
+ *
  * @param[in]   path    Path to the file location
  * @param[in]   out_vertices    Container for the vertices
  * @param[in]   out_normals    Container for the normals
@@ -242,12 +250,12 @@ bool loadBinSTL(
     /// Temporary file holders
     std::vector<glm::vec3 > temp_verts;
     std::vector<glm::vec3 > temp_normals;
-    
+
     /// Load Wavefront OBJ files
     FILE* file = fopen(path,"rb");
-    
+
     unsigned int triCount;
-    
+
     /// Check if the file is open
     if(file!=NULL){
             /// Skip the first 80 characters
@@ -263,9 +271,7 @@ bool loadBinSTL(
                 norm.x = buffer[0];
                 norm.y = buffer[1];
                 norm.z = buffer[2];
-                /// Add vertex thrice to be consistent with output of obj file
-                for(unsigned int i=0;i<3;++i)
-                    temp_normals.push_back(norm);
+
                 /// Add verts
                 glm::vec3 vert1,vert2,vert3;
                 vert1.x=buffer[3];
@@ -277,6 +283,16 @@ bool loadBinSTL(
                 vert3.x=buffer[9];
                 vert3.y=buffer[10];
                 vert3.z=buffer[11];
+
+                /// if normals are zero then we calculate our own
+                if(norm.x == 0 && norm.y==0 && norm.z ==0){
+                    norm = glm::normalize(glm::cross(vert3 - vert1,vert2 - vert1));
+                }
+
+                /// Add vertex thrice to be consistent with output of obj file
+                for(unsigned int i=0;i<3;++i)
+                    temp_normals.push_back(norm);
+
                 temp_verts.push_back(vert1);
                 temp_verts.push_back(vert2);
                 temp_verts.push_back(vert3);
@@ -284,11 +300,24 @@ bool loadBinSTL(
                 fseek(file,2,SEEK_CUR);
             }
     }
-    
+
     out_vertices = temp_verts;
     out_normals = temp_normals;
 
     return false;
     }
+
+bool checkSTL(const char* File){
+
+    char buffer[256];
+    FILE* f = fopen(File,"r");
+    fscanf(f,"%s",buffer);
+
+    if(strcmp(buffer,"solid")==0){
+        return true;
+    } else{
+        return false;
+    }
+}
 
 #endif
