@@ -285,7 +285,7 @@ bool loadBinSTL(
                 vert3.z=buffer[11];
 
                 /// if normals are zero then we calculate our own
-                if(norm.x == 0 && norm.y==0 && norm.z ==0){
+                if(norm.x == 0 && norm.y == 0 && norm.z == 0){
                     norm = glm::normalize(glm::cross(vert3 - vert1,vert2 - vert1));
                 }
 
