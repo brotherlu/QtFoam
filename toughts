@@ -1,0 +1,19 @@
+iohandler
+asset iohandler::load(const char*)
+void iohandler::write(filetype)
+
+struct {
+	const char* filename;
+	std::vector<glm::vec3> Verts;
+	std::vector<glm::vec3> Norms;
+} asset;
+
+class actor: public QtListItem{
+asset* thisAsset;
+transform* transforms;
+}
+
+struct {
+	int type;
+	float value;
+} transform;
