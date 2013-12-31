@@ -1,7 +1,7 @@
 #ifndef IOHANDLER
 #define IOHANDLER
 
-#include "Asset.h"
+class Asset;
 
 class IOHandler {
 	private:
