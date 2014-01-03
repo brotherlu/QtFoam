@@ -5,11 +5,11 @@ class Asset;
 
 class IOHandler {
 	private:
-		IOHandler(void);
+		IOHandler(void){}
 		bool instanced;
 	public:
 		static IOHandler* getHandler(void);
-		static asset* load(const char* filename);
+		static Asset& load(const char* filename);
 };
 
 #endif

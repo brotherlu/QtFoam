@@ -1,7 +1,7 @@
-#ifndef CONTROLDICTHANDLER
-#define CONTROLDICTHANDLER
+#ifndef CDHANDLER
+#define CDHANDLER
 
-class ControlDictHandler{
+class CDHandler{
 	public:
 		enum{
 			CD_APPLICATION=1,
