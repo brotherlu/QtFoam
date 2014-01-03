@@ -1,15 +1,20 @@
 #ifndef IOHANDLER
 #define IOHANDLER
 
-class Asset;
+#include <vector>
+#include <glm/glm.hpp>
 
 class IOHandler {
-	private:
-		IOHandler(void){}
-		bool instanced;
 	public:
-		static IOHandler* getHandler(void);
-		static Asset& load(const char* filename);
+		static IOHandler& getIOHandler();
+		void load(const char* filename,
+				std::vector<glm::vec3>& Verts,
+				std::vector<glm::vec3>& Norms);
+
+	private:
+		IOHandler();
+		static bool instanced;
+		static IOHandler* instance;
 };
 
 #endif

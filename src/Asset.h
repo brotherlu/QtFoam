@@ -6,6 +6,7 @@
 
 class Asset : public QListWidgetItem{
 	public:
+		Asset(){}
 		Asset(std::vector<glm::vec3>& verts,std::vector<glm::vec3> norms){
 			_v = verts;
 			_n = norms;

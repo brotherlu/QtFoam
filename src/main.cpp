@@ -2,7 +2,8 @@
 #include <vector>
 #include <cstring>
 #include <glm/glm.hpp>
-#include "fileloader.h"
+
+#include "IOHandler.h"
 
 int main(int argc, char** argv){
     
@@ -11,19 +12,14 @@ int main(int argc, char** argv){
 
     std::cout << argc << " " << argv[1] << std::endl;
 
-    char* filename;
-
+    IOHandler A = IOHandler::getIOHandler();
+    
+/*
     if (argc >= 2)
-	    filename = argv[1];
+	    getSTL(argv[1],Verts,Normals);
     else
 	    std::cout << "Please input a filename" <<std::endl;
-
-    if (argc >= 3)
-	    if(strcmp(argv[2],"-b")==0)
-		    loadBinSTL(filename,Verts,Normals);
-    	    else if (strcmp(argv[2],"-a")==0)
-		    loadSTL(filename,Verts,Normals);
-
+*/
     printf("%d\n",Normals.size());
     printf("%d\n",Verts.size());
     

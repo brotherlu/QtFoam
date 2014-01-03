@@ -1,1 +1,1 @@
-add_executable(qtfoam main.cpp)
+add_executable(qtfoam main.cpp IOHandler.cpp)

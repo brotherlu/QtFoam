@@ -230,6 +230,8 @@ bool loadSTL(
     out_vertices = temp_verts;
     out_normals = temp_normals;
 
+    fclose(file);
+
     return 1;
     }
 
@@ -304,6 +306,8 @@ bool loadBinSTL(
     out_vertices = temp_verts;
     out_normals = temp_normals;
 
+    fclose(file);
+
     return false;
     }
 
@@ -312,12 +316,22 @@ bool checkSTL(const char* File){
     char buffer[256];
     FILE* f = fopen(File,"r");
     fscanf(f,"%s",buffer);
+    fclose(f);
 
     if(strcmp(buffer,"solid")==0){
         return true;
     } else{
         return false;
     }
+}
+
+void getSTL(const char* filename,
+		std::vector<glm::vec3>& verts,
+		std::vector<glm::vec3>& norms){
+	if(checkSTL(filename))
+		loadSTL(filename,verts,norms);
+	else
+		loadBinSTL(filename,verts,norms);
 }
 
 #endif
